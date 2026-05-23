@@ -453,7 +453,12 @@ function fieldsValidation(record: Record<string, any>, tn: string) {
           .slice(0, maxRowsToParse)
           .some((r: Record<string, any>) => r[record.srcCn] === null || r[record.srcCn] === undefined || r[record.srcCn] === '')
       ) {
-        message.error(t('msg.error.nullValueViolatesNotNull'))
+        message.error({
+          content: t('msg.error.nullValueViolatesNotNull'),
+          duration: 10,
+          closable: true,
+        })
+        return false
       }
     }
 
@@ -466,11 +471,15 @@ function fieldsValidation(record: Record<string, any>, tn: string) {
               (r: Record<string, any>) => r[record.sourceCn] !== null && r[record.srcCn] !== undefined && isNaN(+r[record.srcCn]),
             )
         ) {
-          message.error(t('msg.error.sourceHasInvalidNumbers'))
+          message.error({
+            content: t('msg.error.sourceHasInvalidNumbers'),
+            duration: 10,
+            closable: true,
+          })
           return false
         }
-
         break
+
       case UITypes.Checkbox:
         if (
           importData[tableName].slice(0, maxRowsToParse).some((r: Record<string, any>) => {
@@ -495,12 +504,17 @@ function fieldsValidation(record: Record<string, any>, tn: string) {
             return false
           })
         ) {
-          message.error(t('msg.error.sourceHasInvalidBoolean'))
+          message.error({
+            content: t('msg.error.sourceHasInvalidBoolean'),
+            duration: 10,
+            closable: true,
+          })
           return false
         }
         break
     }
   }
+
   return true
 }
 
