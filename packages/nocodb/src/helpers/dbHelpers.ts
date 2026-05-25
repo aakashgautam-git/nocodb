@@ -639,17 +639,13 @@ export async function getQueriedColumns(
 ) {
   let viewOrTableColumns: Column[] | { fk_column_id?: string }[];
   const _columns = await model.getColumns(context, ncMeta);
-  if (fieldsSet?.size) {
-    viewOrTableColumns = _columns;
+  if (view?.id) {
+    const viewColumns = await View.getColumns(context, view.id);
+    viewOrTableColumns = viewColumns.map((viewColumn) =>
+      _columns.find((col) => col.id === viewColumn.fk_column_id),
+    );
   } else {
-    const viewColumns = view?.id && (await View.getColumns(context, view.id));
-
-    // const columns = _columns ?? (await baseModel.model.getColumns(baseModel.context));
-    // for (const column of columns) {
-    viewOrTableColumns =
-      viewColumns.map((viewColumn) =>
-        _columns.find((col) => col.id === viewColumn.fk_column_id),
-      ) || _columns;
+    viewOrTableColumns = _columns;
   }
   return viewOrTableColumns.filter(
     (viewOrTableColumn) =>
